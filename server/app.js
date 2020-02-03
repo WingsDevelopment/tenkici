@@ -1,28 +1,21 @@
 const Express = require('express')();
 const Http = require('http').Server(Express);
 const Socketio = require('socket.io')(Http);
-
-var players = [];
-
-var positions = [
-    {
-        x: 100,
-        y: 100
-    },
-    {
-        x: 200,
-        y: 200
-    },
-    {
-        x: 300,
-        y: 300
-    }
-]
+const PlayerContainer = require('./playerFiles/PlayerContainer.js');
 
 Socketio.on("connection", socket => {
-    players.push({position: positions[players.length - 1]});
-    socket.emit("position", players[players.length - 1].position);
+    let player = PlayerContainer.createPlayer();
+    socket.emit("playerCreated", player);
+    
+    Socketio.on("move", data => {
+        let player = PlayerContainer.getPlayer(data.id);
+
+        player.changePosition(data.direction);
+
+        socket.emit("position", player.position);
+    });
 });
+
 
 Http.listen('3000', () => {
     console.log('listening at :3000...');
