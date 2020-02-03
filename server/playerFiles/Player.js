@@ -13,36 +13,35 @@ class Player {
         this.color = colors[id];
         this.movementSpeed = 5;
     }
+
     changePosition(direction) {
-        switch(direction) {
-            case direction == Direction.Left:
-                this.position.x -= this.movementSpeed;
-                break;
-            case direction == Direction.LeftUp:
-                this.position.x -= this.movementSpeed;
-                this.position.y += this.movementSpeed;
-                break;
-            case direction == Direction.Up:
-                this.position.y += this.movementSpeed;
-                break;
-            case direction == Direction.RightUp:
-                this.position.y += this.movementSpeed;
-                this.position.x += this.movementSpeed;
-                break;
-            case direction == Direction.Right:
-                this.position.x += this.movementSpeed;
-                break;
-            case direction == Direction.RightDown:
-                this.position.x += this.movementSpeed;
-                this.position.y -= this.movementSpeed;
-                break;
-            case direction == Direction.Down:
-                this.position.y -= this.movementSpeed;
-                break;
-            case direction == Direction.LeftDown:
-                this.position.y -= this.movementSpeed;
-                this.position.x -= this.movementSpeed;
-                break;
+        if (direction == Direction.Left){
+            this.position.x -= this.movementSpeed;
+        } 
+        else if (direction == Direction.LeftUp) {
+            this.position.x -= this.movementSpeed;
+            this.position.y += this.movementSpeed;
+        } 
+        else if (direction == Direction.Up) {
+            this.position.y += this.movementSpeed;
+        } 
+        else if (direction == Direction.RightUp) {
+            this.position.y += this.movementSpeed;
+            this.position.x += this.movementSpeed;
+        } 
+        else if (direction == Direction.Right) {
+            this.position.x += this.movementSpeed;
+        } 
+        else if (direction == Direction.RightDown) {
+            this.position.x += this.movementSpeed;
+            this.position.y -= this.movementSpeed;
+        } 
+        else if (direction == Direction.Down) {
+            this.position.y -= this.movementSpeed;
+        } 
+        else if (direction == Direction.LeftDown) {
+            this.position.y -= this.movementSpeed;
+            this.position.x -= this.movementSpeed;
         }
     }
 }

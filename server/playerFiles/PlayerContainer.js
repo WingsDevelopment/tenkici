@@ -1,7 +1,7 @@
 const Player = require('./Player.js')
 
 class PlayerContainer {
-    static maxPlayers = 5;
+    static maxPlayers = 15;
 
     static createPlayer() {
         if (this.players.length >= this.maxPlayers) {
@@ -14,6 +14,14 @@ class PlayerContainer {
 
     static getPlayer(id) {
         return this.players[id];
+    }
+
+    static removePlayer(id) {
+        let index = this.players.findIndex(x => x.id === id);
+
+        if (index > -1) {
+            this.players.splice(index, 1);
+        }
     }
 }
 PlayerContainer.players = [];
