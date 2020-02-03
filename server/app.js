@@ -8,6 +8,7 @@ Socketio.on("connection", socket => {
     socket.emit("playerCreated", player);
     
     Socketio.on("move", data => {
+        console.log('moved');
         let player = PlayerContainer.getPlayer(data.id);
 
         player.changePosition(data.direction);
