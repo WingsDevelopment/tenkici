@@ -2,7 +2,7 @@ const colors = require('../helpers/ColorProvider.js');
 const Direction = require('../helpers/Direction.js');
 
 class Player {
-    constructor(id) {
+    constructor(id, color) {
         this.id = id;
         this.health = 10;
         this.isDead = false;
@@ -10,7 +10,7 @@ class Player {
             x: 300,
             y: 300,
         }
-        this.color = colors[id];
+        this.color = color;
         this.movementSpeed = 5;
     }
 

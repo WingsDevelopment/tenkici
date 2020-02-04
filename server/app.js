@@ -4,25 +4,27 @@ const Socketio = require('socket.io')(Http);
 const PlayerContainer = require('./playerFiles/PlayerContainer.js');
 
 Socketio.on("connection", socket => {
+
     socket.on("createPlayer", () => {
-        let player = PlayerContainer.createPlayer();
-        socket.emit("playerCreated", player);
-        Socketio.emit("playersChanged", PlayerContainer.players);
+        let player = PlayerContainer.createPlayer(socket.id);
+        socket.emit("join", player);
+        socket.emit("initOthers", PlayerContainer.players);
+        Socketio.emit("playerAdded", player);
     });
     
     socket.on("move", data => {
-        let player = PlayerContainer.getPlayer(data.id);
+        let player = PlayerContainer.getPlayer(socket.id);
 
         player.changePosition(data.direction);
 
         Socketio.emit("moved", player);
     });
 
-    socket.on("removePlayer", player => {
-        PlayerContainer.removePlayer(player.id);
+    socket.on("disconnect", () => {
+        PlayerContainer.removePlayer(socket.id)
 
-        Socketio.emit("playersChanged", PlayerContainer.players);
-    });
+        Socketio.emit("playerRemoved", socket.id);
+    })
 });
 
 Http.listen('3000', () => {

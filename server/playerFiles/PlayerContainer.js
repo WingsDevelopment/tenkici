@@ -1,14 +1,31 @@
-const Player = require('./Player.js')
+const Player = require('./Player.js');
+const colors = require('../helpers/ColorProvider.js')
 
 class PlayerContainer {
     static maxPlayers = 15;
+    static slots = [];
+    static players = {};
 
-    static createPlayer() {
+    static createPlayer(id) {
         if (this.players.length >= this.maxPlayers) {
             return null;
         }
-        let player = new Player(this.players.length);
-        this.players.push(player);
+
+        let color = null;
+        let playerOrder = 0;
+        for(let i = 0; i < this.maxPlayers; i++) {
+            if (this.slots[i] == null && this.slots[i] !== true) {
+                this.slots[i] = true;
+                color = colors[i];
+                playerOrder = i;
+                break;
+            }
+        }
+
+        let player = new Player(id, color, playerOrder);
+
+        this.players[id] = player;
+
         return player;
     }
 
@@ -17,13 +34,13 @@ class PlayerContainer {
     }
 
     static removePlayer(id) {
-        let index = this.players.findIndex(x => x.id === id);
+        let player = this.players[id];
+        if (player != null) {
+            this.slots[player.playerOrder] = false;
 
-        if (index > -1) {
-            this.players.splice(index, 1);
+            delete this.players[id];
         }
     }
 }
-PlayerContainer.players = [];
 
 module.exports = PlayerContainer;
