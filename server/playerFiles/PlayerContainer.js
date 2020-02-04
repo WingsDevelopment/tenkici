@@ -2,9 +2,6 @@ const Player = require('./Player.js');
 const colors = require('../helpers/ColorProvider.js')
 
 class PlayerContainer {
-    static maxPlayers = 15;
-    static slots = [];
-    static players = {};
 
     static createPlayer(id) {
         if (this.players.length >= this.maxPlayers) {
@@ -42,5 +39,8 @@ class PlayerContainer {
         }
     }
 }
+PlayerContainer.maxPlayers = 15;
+PlayerContainer.slots = [];
+PlayerContainer.players = {};
 
 module.exports = PlayerContainer;
