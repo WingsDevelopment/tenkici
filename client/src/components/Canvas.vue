@@ -1,7 +1,5 @@
 <template>
-  <div class="hello">
-    <p>{{position.x}}</p>
-    <p>{{position.y}}</p>
+  <div>
     <v-stage :config="configKonva">
     <v-layer>
       <div ></div>

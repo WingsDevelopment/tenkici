@@ -10,8 +10,9 @@ class PlayerContainer {
 
         let color = null;
         let playerOrder = 0;
+        console.log(this.slots);
         for(let i = 0; i < this.maxPlayers; i++) {
-            if (this.slots[i] == null && this.slots[i] !== true) {
+            if (this.slots[i] == null) {
                 this.slots[i] = true;
                 color = colors[i];
                 playerOrder = i;
@@ -33,7 +34,8 @@ class PlayerContainer {
     static removePlayer(id) {
         let player = this.players[id];
         if (player != null) {
-            this.slots[player.playerOrder] = false;
+            console.log(player.playerOrder);
+            this.slots[player.playerOrder] = null;
 
             delete this.players[id];
         }

@@ -2,7 +2,7 @@ const colors = require('../helpers/ColorProvider.js');
 const Direction = require('../helpers/Direction.js');
 
 class Player {
-    constructor(id, color) {
+    constructor(id, color, playerOrder) {
         this.id = id;
         this.health = 10;
         this.isDead = false;
@@ -12,6 +12,7 @@ class Player {
         }
         this.color = color;
         this.movementSpeed = 5;
+        this.playerOrder = playerOrder;
     }
 
     changePosition(direction) {

@@ -2,6 +2,7 @@ const Express = require('express')();
 const Http = require('http').Server(Express);
 const Socketio = require('socket.io')(Http);
 const PlayerContainer = require('./playerFiles/PlayerContainer.js');
+const CheeseSpawner = require('./helpers/CheeseSpawner.js');
 
 Socketio.on("connection", socket => {
 
@@ -25,6 +26,8 @@ Socketio.on("connection", socket => {
 
         Socketio.emit("playerRemoved", socket.id);
     })
+
+    // setTimeout(myFunc(Socketio), 1500, 'funky');
 });
 
 Http.listen('3000', () => {
