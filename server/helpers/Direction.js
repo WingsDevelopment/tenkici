@@ -8,3 +8,5 @@ const Direction = {
     RightUp: 6,
     RightDown: 7
 }
+
+module.exports = Direction;
