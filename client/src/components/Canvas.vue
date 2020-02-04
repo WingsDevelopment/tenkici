@@ -4,10 +4,13 @@
     <p>{{position.y}}</p>
     <v-stage :config="configKonva">
     <v-layer>
-      <v-circle :config="configCircle"></v-circle>
+      <div ></div>
+      <v-circle  :config="configCircle"></v-circle>
+      <template v-if="otherPlayers!=null">
+        <playerCanvas v-for="player in otherPlayers" v-bind:player="player" v-bind:key="player.id" ></playerCanvas>
+      </template>
     </v-layer>
   </v-stage>
-  
   </div>
 
 </template>
@@ -16,12 +19,17 @@
 // import io from 'socket.io-client';
 // import player from '../viewModels/Player';
 import direction from '../viewModels/Direction';
+import playerCanvas from './Player.vue';
 
 export default {
-  name: 'HelloWorld',
+  name: 'Canvas',
   props: {
     socket : Object,
-    player : Object
+    player : Object,
+    otherPlayers : Object
+  },
+  components: {
+    playerCanvas
   },
   data() {
     return {
@@ -44,10 +52,26 @@ export default {
         x: this.player.position.x,
         y: this.player.position.y,
         radius: 20,
-        fill: "red",
+        fill: this.player.color,
         stroke: "black",
-        strokeWidth: 4}
-      }
+        strokeWidth: 4
+        }
+      },
+    configCirclesForOther(id){
+      // eslint-disable-next-line no-console
+      console.log(this.otherPlayers);
+      // eslint-disable-next-line no-console
+      console.log(id);
+      
+      return{
+        x: this.otherPlayers[id].position.x,
+        y: this.otherPlayers[id].position.y,
+        radius: 20,
+        fill: this.otherPlayers[id].color,
+        stroke: "black",
+        strokeWidth: 4
+        }
+    },
   },
   mounted() {
     let self = this;
@@ -57,21 +81,19 @@ export default {
     });
   },
   methods:{
+    
     checkAndTranslate(keyCode){
       switch(keyCode){
         //A
         case 65:
-          // this.configCircle.x-=50;
           this.socket.emit("move", {id: this.player.id, direction: direction.Left});
           break;
           //s
         case 83:
-          // this.configCircle.y+=50;
           this.socket.emit("move", {id: this.player.id, direction: direction.Down});
           break;
           // d
         case 68:
-          // this.configCircle.x+=50;
           this.socket.emit("move", {id: this.player.id, direction: direction.Right});
           break;
           //w

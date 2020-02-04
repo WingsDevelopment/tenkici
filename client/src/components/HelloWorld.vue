@@ -8,7 +8,7 @@
     </ul>
     <button @click="test(0)">click me</button>
     <button @click="test(1)">click me</button>
-    <Canvas v-bind:socket="socket" v-if="player!=null" v-bind:player="player"/>
+    <Canvas v-bind:socket="socket" v-if="player!=null && otherPlayers!=null" v-bind:player="player" v-bind:otherPlayers="otherPlayers"/>
   </div>
 </template>
 
@@ -35,7 +35,7 @@ export default {
   created() {
     // eslint-disable-next-line no-console
     console.log('hi');
-    this.socket = io("http://192.168.0.109:3000");
+    this.socket = io("http://localhost:3000");
 
     this.socket.on("join", player => {
       this.player = player;
