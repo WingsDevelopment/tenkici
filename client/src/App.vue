@@ -1,16 +1,16 @@
 <template>
   <div id="app" style="background-color: #eef5db">
-    <Canvas msg="Welcome to Your Vue.js App"/>
+    <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
 </template>
 
 <script>
-import Canvas from './components/Canvas.vue'
+import HelloWorld from './components/HelloWorld.vue'
 
 export default {
   name: 'app',
   components: {
-    Canvas
+    HelloWorld
   }
 }
 </script>

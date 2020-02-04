@@ -8,17 +8,22 @@
     </ul>
     <button @click="test(0)">click me</button>
     <button @click="test(1)">click me</button>
+    <Canvas v-bind:socket="socket" v-if="player!=null" v-bind:player="player"/>
   </div>
 </template>
 
 <script>
 import io from 'socket.io-client';
 import Vue from 'vue';
+import Canvas from './Canvas.vue';
 
 export default {
   name: 'HelloWorld',
   props: {
     
+  },
+  components: {
+    Canvas
   },
   data() {
     return {
