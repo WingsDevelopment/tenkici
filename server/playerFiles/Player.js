@@ -20,13 +20,13 @@ class Player {
         } 
         else if (direction == Direction.LeftUp) {
             this.position.x -= this.movementSpeed;
-            this.position.y += this.movementSpeed;
+            this.position.y -= this.movementSpeed;
         } 
         else if (direction == Direction.Up) {
-            this.position.y += this.movementSpeed;
+            this.position.y -= this.movementSpeed;
         } 
         else if (direction == Direction.RightUp) {
-            this.position.y += this.movementSpeed;
+            this.position.y -= this.movementSpeed;
             this.position.x += this.movementSpeed;
         } 
         else if (direction == Direction.Right) {
@@ -34,13 +34,13 @@ class Player {
         } 
         else if (direction == Direction.RightDown) {
             this.position.x += this.movementSpeed;
-            this.position.y -= this.movementSpeed;
+            this.position.y += this.movementSpeed;
         } 
         else if (direction == Direction.Down) {
-            this.position.y -= this.movementSpeed;
+            this.position.y += this.movementSpeed;
         } 
         else if (direction == Direction.LeftDown) {
-            this.position.y -= this.movementSpeed;
+            this.position.y += this.movementSpeed;
             this.position.x -= this.movementSpeed;
         }
     }
