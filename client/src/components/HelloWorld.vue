@@ -35,7 +35,7 @@ export default {
   created() {
     // eslint-disable-next-line no-console
     console.log('hi');
-    this.socket = io("http://localhost:3000");
+    this.socket = io("http://192.168.0.109:3000");
 
     this.socket.on("join", player => {
       this.player = player;
