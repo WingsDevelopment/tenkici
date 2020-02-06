@@ -13,12 +13,12 @@ Socketio.on("connection", socket => {
         Socketio.emit("playerAdded", player);
     });
     
-    socket.on("move", data => {
+    socket.on("move", direction => {
         let player = PlayerContainer.getPlayer(socket.id);
 
-        player.changePosition(data.direction);
+        player.changePosition(direction);
 
-        Socketio.emit("moved", player);
+        Socketio.emit("moved", player.getPlayerPositionData());
     });
 
     socket.on("disconnect", () => {

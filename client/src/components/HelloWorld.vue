@@ -33,7 +33,8 @@ export default {
   created() {
     // eslint-disable-next-line no-console
     console.log('hi');
-    this.socket = io("http://192.168.0.109:3000");
+    this.socket = io("http://192.168.1.113:3000");
+    this.socket.binaryType = 'blob';
 
     this.socket.on("join", player => {
       this.player = player;
@@ -58,13 +59,18 @@ export default {
     });
     
     this.socket.on("moved", data => {
-      // eslint-disable-next-line no-debugger
-      if (data.id == this.player.id) {
-        this.player.position = data.position;
+      var positionX = parseInt(data.substring(0, 4), 10);
+      var positionY = parseInt(data.substring(4, 8), 10);
+      var id = data.substring(8);
+
+      if (id == this.player.id) {
+        this.player.position.x = positionX;
+        this.player.position.y = positionY;
       } else {
-        let otherPlayer = this.otherPlayers[data.id];
+        var otherPlayer = this.otherPlayers[id];
         if (otherPlayer != null) {
-          otherPlayer.position = data.position;
+          otherPlayer.position.x = positionX;
+          otherPlayer.position.y = positionY;
         }
       }
     })

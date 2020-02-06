@@ -1,6 +1,7 @@
 const colors = require('../helpers/ColorProvider.js');
 const Direction = require('../helpers/Direction.js');
 
+
 class Player {
     constructor(id, color, playerOrder) {
         this.id = id;
@@ -13,6 +14,16 @@ class Player {
         this.color = color;
         this.movementSpeed = 5;
         this.playerOrder = playerOrder;
+    }
+
+    pad = function(s) {
+        var s = s.toString();
+        while (s.length < 4) {s = "0" + s;}
+        return s;
+    }
+
+    getPlayerPositionData(){
+        return this.pad(this.position.x) + this.pad(this.position.y) + this.id;
     }
 
     changePosition(direction) {

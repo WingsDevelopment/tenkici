@@ -84,19 +84,19 @@ export default {
       switch(keyCode){
         //A
         case 65:
-          this.socket.emit("move", {id: this.player.id, direction: direction.Left});
+          this.socket.emit("move", direction.Left);
           break;
           //s
         case 83:
-          this.socket.emit("move", {id: this.player.id, direction: direction.Down});
+          this.socket.emit("move", direction.Down);
           break;
           // d
         case 68:
-          this.socket.emit("move", {id: this.player.id, direction: direction.Right});
+          this.socket.emit("move", direction.Right);
           break;
           //w
         case 87:
-          this.socket.emit("move", {id: this.player.id, direction: direction.Up});
+          this.socket.emit("move", direction.Up);
           break;
       }
     }
