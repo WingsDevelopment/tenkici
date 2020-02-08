@@ -1,6 +1,7 @@
 const colors = require('../helpers/ColorProvider.js');
 const Direction = require('../helpers/Direction.js');
-
+const World = require('../gameFiles/World.js');
+const domainEvents = require('../helpers/DomainEvents');
 
 class Player {
     constructor(id, color, playerOrder) {
@@ -16,6 +17,7 @@ class Player {
         this.health = 0;
         this.radius = 0;
         this.movementSpeed = 0;
+        this.direction = -1;
     }
 
     pad = function(s) {
@@ -28,35 +30,52 @@ class Player {
         return this.pad(this.position.x) + this.pad(this.position.y) + this.id;
     }
 
-    changePosition(direction) {
-        if (direction == Direction.Left){
+    changePosition() {
+        if (this.direction === -1) return;
+        let prevX = this.position.x;
+        let prevY = this.position.y;
+
+        if (this.direction == Direction.Left){
             this.position.x -= this.movementSpeed;
         } 
-        else if (direction == Direction.LeftUp) {
+        else if (this.direction == Direction.LeftUp) {
             this.position.x -= this.movementSpeed;
             this.position.y -= this.movementSpeed;
         } 
-        else if (direction == Direction.Up) {
+        else if (this.direction == Direction.Up) {
             this.position.y -= this.movementSpeed;
         } 
-        else if (direction == Direction.RightUp) {
+        else if (this.direction == Direction.RightUp) {
             this.position.y -= this.movementSpeed;
             this.position.x += this.movementSpeed;
         } 
-        else if (direction == Direction.Right) {
+        else if (this.direction == Direction.Right) {
             this.position.x += this.movementSpeed;
         } 
-        else if (direction == Direction.RightDown) {
+        else if (this.direction == Direction.RightDown) {
             this.position.x += this.movementSpeed;
             this.position.y += this.movementSpeed;
         } 
-        else if (direction == Direction.Down) {
+        else if (this.direction == Direction.Down) {
             this.position.y += this.movementSpeed;
         } 
-        else if (direction == Direction.LeftDown) {
+        else if (this.direction == Direction.LeftDown) {
             this.position.y += this.movementSpeed;
             this.position.x -= this.movementSpeed;
         }
+
+        if (World.isPlayerColidingWithWall(this)){
+            this.position.x = prevX;
+            this.position.y = prevY;
+            return;
+        }
+        if (World.isPlayerOutOfBounds(this)) {
+            this.position.x = prevX;
+            this.position.y = prevY;
+            return;
+        }
+        
+        domainEvents.emit('playerMoved', this.getPlayerPositionData());
     }
 }
 

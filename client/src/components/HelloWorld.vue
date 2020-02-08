@@ -5,7 +5,11 @@
        <button @click="spawnAsVampire">Spawn as vampire</button>
     </template>
 
-    <Canvas v-bind:socket="socket" v-if="player!=null && otherPlayers!=null" v-bind:player="player" v-bind:otherPlayers="otherPlayers"/>
+    <Canvas v-bind:socket="socket"
+      v-if="player!=null && otherPlayers!=null" 
+      v-bind:player="player" 
+      v-bind:otherPlayers="otherPlayers"
+      v-bind:walls="walls"/>
   </div>
 </template>
 
@@ -27,7 +31,8 @@ export default {
       socket: {},
       player: null,
       otherPlayers: {},
-      spawned: false
+      spawned: false,
+      walls: []
     }
   },
   created() {
@@ -42,6 +47,12 @@ export default {
     this.socket.on("serverError", message => {
       alert("Useravamo se, server error: " + message);
     });
+    
+    this.socket.on("initWalls", walls => {
+      // eslint-disable-next-line no-console
+      console.log(walls);
+      this.walls = walls;
+    })
 
     this.socket.on("initOthers", players => {
       Object.keys(players).forEach( (key) => {
@@ -61,7 +72,7 @@ export default {
       Vue.delete(this.otherPlayers, id);
     });
     
-    this.socket.on("moved", data => {
+    this.socket.on("playerMoved", data => {
       data = new Buffer(data).toString();
       var positionX = parseInt(data.substring(0, 4), 10);
       var positionY = parseInt(data.substring(4, 8), 10);
@@ -81,7 +92,8 @@ export default {
     
     this.socket.on("playerDied", id => {
       if (this.player.id === id) {
-        this.player = null
+        this.player = null;
+        this.spawned = false;
         // alert('umro si nube');
       } else {
         Vue.delete(this.otherPlayers, id);

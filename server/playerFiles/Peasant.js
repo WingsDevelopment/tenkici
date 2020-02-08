@@ -13,12 +13,31 @@ class Peasant extends Player {
             x: 400,
             y: 300,
         }
+        this.isInvisible = false;
+    }
+
+    consumeInvisRune() {
+        this.setInvis(true);
+        setTimeout(this.setInvis(false), 3000);
+    }
+    setInvis(isInvisible) {
+        this.isInvisible = isInvisible;
+
+        if (this.isInvisible) {
+            this.movementSpeed = 15;
+            domainEvents.emit('invisConsumed', this.id);
+        } else {
+            this.movementSpeed = 8;
+            domainEvents.emit('invisExpired', this.id);
+        }
     }
     
     ColidedWithVampire() {
+        if (this.isInvisible) return;
+
         this.health = 0;
         this.isDead = true;
-        domainEvents.emit('playerDied', this);
+        domainEvents.emit('playerDied', this.id);
     }
 }
 
