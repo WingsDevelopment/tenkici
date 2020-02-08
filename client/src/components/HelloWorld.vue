@@ -1,11 +1,10 @@
 <template>
   <div class="hello">
-    <!-- <p>you :{{player}}</p> -->
-    <!-- <ul id="v-for-object" class="demo">
-      <li v-for="player in otherPlayers" :key="player.id">
-        {{ player }}
-      </li>
-    </ul> -->
+    <template v-if="!spawned">
+       <button @click="spawnAsPeasant">Spawn as peasant</button>
+       <button @click="spawnAsVampire">Spawn as vampire</button>
+    </template>
+
     <Canvas v-bind:socket="socket" v-if="player!=null && otherPlayers!=null" v-bind:player="player" v-bind:otherPlayers="otherPlayers"/>
   </div>
 </template>
@@ -27,17 +26,21 @@ export default {
     return {
       socket: {},
       player: null,
-      otherPlayers: {}
+      otherPlayers: {},
+      spawned: false
     }
   },
   created() {
-    // eslint-disable-next-line no-console
-    console.log('hi');
-    this.socket = io("http://192.168.1.113:3000");
+    this.socket = io("http://192.168.0.17:3000");
     this.socket.binaryType = 'blob';
 
     this.socket.on("join", player => {
       this.player = player;
+      this.spawned = true;
+    });
+
+    this.socket.on("serverError", message => {
+      alert("Useravamo se, server error: " + message);
     });
 
     this.socket.on("initOthers", players => {
@@ -59,6 +62,7 @@ export default {
     });
     
     this.socket.on("moved", data => {
+      data = new Buffer(data).toString();
       var positionX = parseInt(data.substring(0, 4), 10);
       var positionY = parseInt(data.substring(4, 8), 10);
       var id = data.substring(8);
@@ -73,15 +77,27 @@ export default {
           otherPlayer.position.y = positionY;
         }
       }
-    })
+    });
+    
+    this.socket.on("playerDied", id => {
+      if (this.player.id === id) {
+        this.player = null
+        // alert('umro si nube');
+      } else {
+        Vue.delete(this.otherPlayers, id);
+      }
+
+    });
   },
   mounted() {
-    this.socket.emit("createPlayer");
   },
   methods: {
-    test(dir) {
-      this.socket.emit("move", {id: this.player.id, direction: dir});
+    spawnAsVampire() {
+      this.socket.emit("createPlayer", 1);
     },
+    spawnAsPeasant() {
+      this.socket.emit("createPlayer", 0);
+    }
   }
 }
 </script>

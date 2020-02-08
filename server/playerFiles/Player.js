@@ -5,15 +5,17 @@ const Direction = require('../helpers/Direction.js');
 class Player {
     constructor(id, color, playerOrder) {
         this.id = id;
-        this.health = 10;
         this.isDead = false;
         this.position = {
             x: 300,
             y: 300,
         }
         this.color = color;
-        this.movementSpeed = 5;
         this.playerOrder = playerOrder;
+        //nasledjeno
+        this.health = 0;
+        this.radius = 0;
+        this.movementSpeed = 0;
     }
 
     pad = function(s) {

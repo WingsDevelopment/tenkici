@@ -2,32 +2,42 @@ const Express = require('express')();
 const Http = require('http').Server(Express);
 const Socketio = require('socket.io')(Http);
 const PlayerContainer = require('./playerFiles/PlayerContainer.js');
-const CheeseSpawner = require('./helpers/CheeseSpawner.js');
+const domainEvents = require('./helpers/DomainEvents.js');
 
 Socketio.on("connection", socket => {
-
-    socket.on("createPlayer", () => {
-        let player = PlayerContainer.createPlayer(socket.id);
-        socket.emit("join", player);
-        socket.emit("initOthers", PlayerContainer.players);
-        Socketio.emit("playerAdded", player);
-    });
+    try {
+        socket.on("createPlayer", (playerType) => {
+            let player = PlayerContainer.createPlayer(socket.id, playerType);
+            socket.emit("join", player);
+            socket.emit("initOthers", PlayerContainer.players);
+            Socketio.emit("playerAdded", player);
+        });
+        
+        socket.on("move", direction => {
+            let player = PlayerContainer.getPlayer(socket.id);
     
-    socket.on("move", direction => {
-        let player = PlayerContainer.getPlayer(socket.id);
+            player.changePosition(direction);
+    
+            PlayerContainer.checkColisions();
+    
+            Socketio.emit("moved", Buffer.from(player.getPlayerPositionData(), 'utf8' ));
+        });
+    
+        socket.on("disconnect", () => {
+            console.log('disc');
+            PlayerContainer.removePlayer(socket.id)
+    
+            Socketio.emit("playerRemoved", socket.id);
+        })
 
-        player.changePosition(direction);
-
-        Socketio.emit("moved", player.getPlayerPositionData());
-    });
-
-    socket.on("disconnect", () => {
-        PlayerContainer.removePlayer(socket.id)
-
-        Socketio.emit("playerRemoved", socket.id);
-    })
-
-    // setTimeout(myFunc(Socketio), 1500, 'funky');
+        //domain events
+        domainEvents.on('playerDied', (player) => {
+            socket.emit("playerDied", player.id);
+        });
+    }
+    catch (e) {
+        // Socketio.emit("serverError", e.message);
+    }
 });
 
 Http.listen('3000', () => {

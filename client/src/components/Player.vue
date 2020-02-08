@@ -1,7 +1,6 @@
 <template>
   <div class="hello">
-            <v-circle  :config="configCircle"></v-circle>
-
+    <v-circle  :config="configCircle"></v-circle>
   </div>
 </template>
 
@@ -18,7 +17,7 @@ export default {
             return{
                 x: this.player.position.x,
                 y: this.player.position.y,
-                radius: 20,
+                radius: this.player.radius,
                 fill: this.player.color,
                 stroke: "black",
                 strokeWidth: 4
