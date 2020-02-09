@@ -2,6 +2,7 @@ const Express = require('express')();
 const Http = require('http').Server(Express);
 const Socketio = require('socket.io')(Http);
 const PlayerContainer = require('./playerFiles/PlayerContainer.js');
+const PlayerType = require('./playerFiles/PlayerType.js');
 const domainEvents = require('./helpers/DomainEvents.js');
 const MapContainer = require('./gameFiles/MapContainer.js');
 const World = require('./gameFiles/World.js');
@@ -33,10 +34,21 @@ Socketio.on("connection", socket => {
     try {
         socket.on("createPlayer", (playerType) => {
             let player = PlayerContainer.createPlayer(socket.id, playerType);
-            socket.emit("join", player);
-            socket.emit("initOthers", PlayerContainer.players);
-            socket.emit("initWalls", World.walls);
-            Socketio.emit("playerAdded", player);
+            if (player == null) {
+                if (playerType === PlayerType.Vampire){
+                    socket.emit("serverError", 'Object reference is not ne loziii se, ima previse vampira, probaj ko ljakse :)');
+                }
+                else {
+                    socket.emit("serverError", 'Probaj posle');
+                }
+            }
+            else {
+                socket.emit("join", player);
+                socket.emit("initOthers", PlayerContainer.players);
+                socket.emit("initWalls", World.walls);
+                socket.emit("initInvises", PlayerContainer.invisRunes);
+                Socketio.emit("playerAdded", player);
+            }
         });
         
         socket.on("changeDirection", direction => {
@@ -44,7 +56,6 @@ Socketio.on("connection", socket => {
             if (player != null) {
                 player.direction = direction; 
             }
-            // Socketio.emit("moved", Buffer.from(player.getPlayerPositionData(), 'utf8' ));
         });
     
         socket.on("disconnect", () => {
@@ -54,21 +65,43 @@ Socketio.on("connection", socket => {
             Socketio.emit("playerRemoved", socket.id);
         })
 
+        socket.on("consumeInvis", () => {
+            PlayerContainer.playerIdsForInvisRequests.push(socket.id);
+        })
+
         //domain events
-        domainEvents.on('playerMoved', (playerPositionData) => {
-            socket.emit("playerMoved", Buffer.from(playerPositionData, 'utf8' ));
+        domainEvents.on('playerMoved', (player) => {
+            let thisPlayer = PlayerContainer.getPlayer(socket.id);
+            if (thisPlayer == null) return;
+
+            if (thisPlayer.playerType === PlayerType.Vampire) {
+                if (!player.isInvisible) {
+                    socket.emit("playerMoved", Buffer.from(player.getPlayerPositionData(), 'utf8' ));
+                }
+            } else {
+                socket.emit("playerMoved", Buffer.from(player.getPlayerPositionData(), 'utf8' ));
+            }
         });
-        domainEvents.on('invisConsumed', (id) => {
-            socket.emit("invisConsumed", id);
+        domainEvents.on('invisSpawned', (invis) => {
+            socket.emit("invisSpawned", invis);
         });
-        domainEvents.on('invisExpired', (id) => {
-            socket.emit("invisExpired", id);
+        domainEvents.on('invisConsumed', (playerId) => {
+            socket.emit("invisConsumed", playerId);
+        });
+        domainEvents.on('deleteInvisesFromMap', (ids) => {
+            socket.emit("deleteInvisesFromMap", ids);
+        });
+        domainEvents.on('invisExpired', (playerId) => {
+            let player = PlayerContainer.getPlayer(playerId);
+            if (player == null) return;
+            socket.emit("invisExpired", player.getPlayerPositionData());
         });
         domainEvents.on('playerDied', (id) => {
             socket.emit("playerDied", id);
         });
     }
     catch (e) {
+        console.log('a?0');
         // Socketio.emit("serverError", e.message);
     }
 });

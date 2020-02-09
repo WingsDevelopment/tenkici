@@ -17,18 +17,21 @@ class Peasant extends Player {
     }
 
     consumeInvisRune() {
+        if (this.isInvisible) return false;
+
         this.setInvis(true);
-        setTimeout(this.setInvis(false), 3000);
+        setTimeout(() => { this.setInvis(false) } , 3000);
+        return true;
     }
     setInvis(isInvisible) {
         this.isInvisible = isInvisible;
 
         if (this.isInvisible) {
-            this.movementSpeed = 15;
-            domainEvents.emit('invisConsumed', this.id);
+            this.movementSpeed = 7;
+            domainEvents.emit("invisConsumed", this.id);
         } else {
-            this.movementSpeed = 8;
-            domainEvents.emit('invisExpired', this.id);
+            this.movementSpeed = 5;
+            domainEvents.emit("invisExpired", this.id);
         }
     }
     
@@ -37,6 +40,7 @@ class Peasant extends Player {
 
         this.health = 0;
         this.isDead = true;
+        this.isInvisible = false;
         domainEvents.emit('playerDied', this.id);
     }
 }

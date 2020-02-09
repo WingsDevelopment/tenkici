@@ -18,6 +18,7 @@ class Player {
         this.radius = 0;
         this.movementSpeed = 0;
         this.direction = -1;
+        this.isInvisible = false;
     }
 
     pad = function(s) {
@@ -64,7 +65,7 @@ class Player {
             this.position.x -= this.movementSpeed;
         }
 
-        if (World.isPlayerColidingWithWall(this)){
+        if (World.isCircleColidingWithWall(this)){
             this.position.x = prevX;
             this.position.y = prevY;
             return;
@@ -74,8 +75,8 @@ class Player {
             this.position.y = prevY;
             return;
         }
-        
-        domainEvents.emit('playerMoved', this.getPlayerPositionData());
+    
+        domainEvents.emit('playerMoved', this);
     }
 }
 

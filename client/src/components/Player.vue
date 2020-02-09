@@ -19,8 +19,9 @@ export default {
                 y: this.player.position.y,
                 radius: this.player.radius,
                 fill: this.player.color,
-                stroke: "black",
-                strokeWidth: 4
+                stroke: this.player.isInvisible ? "" : "black",
+                strokeWidth: this.player.isInvisible ? 0 : 4,
+                shadowBlur: 15
             }
         },
     }

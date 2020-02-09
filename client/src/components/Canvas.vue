@@ -5,9 +5,9 @@
       <div ></div>
       <v-circle  :config="configCircle"></v-circle>
       <template v-if="otherPlayers!=null">
-        <playerCanvas v-for="player in otherPlayers" v-bind:player="player" v-bind:key="player.id" ></playerCanvas>
+        <playerCanvas v-for="player in getOthers" v-bind:player="player" v-bind:key="player.id" ></playerCanvas>
       </template>
-      <v-rect v-for="wall in walls" :key="wall.id" 
+      <v-rect v-for="wall in walls" :key="'wall' + wall.id" 
         :config="{
             x: wall.x,
             y: wall.y,
@@ -15,6 +15,15 @@
             height: wall.height,
             fill: 'brown',
             shadowBlur: 10
+          }"
+      />
+      <v-circle v-for="invis in invisRunes" :key="'inv' + invis.id" 
+        :config="{
+            x: invis.position.x,
+            y: invis.position.y,
+            radius: invis.radius,
+            fill: invis.color,
+            shadowBlur: 10,
           }"
       />
     </v-layer>
@@ -35,7 +44,8 @@ export default {
     socket : Object,
     player : Object,
     otherPlayers : Object,
-    walls: Array
+    walls: Array,
+    invisRunes: Array
   },
   components: {
     playerCanvas
@@ -57,14 +67,28 @@ export default {
   created() {    
   },
   computed: {
+    getOthers() {
+      if (this.player == null || this.otherPlayers == null) return;
+      
+      if (this.player.playerType === 1) {
+        return Object.fromEntries(
+          Object.entries(this.otherPlayers)
+          // eslint-disable-next-line no-unused-vars
+          .filter(([k,v]) => !v.isInvisible));
+      } else {
+        return this.otherPlayers;
+      }
+    },
+
     configCircle(){
       return{
         x: this.player.position.x,
         y: this.player.position.y,
         radius: this.player.radius,
         fill: this.player.color,
-        stroke: "black",
-        strokeWidth: 4
+        stroke: this.player.isInvisible ? "" : "black",
+        strokeWidth: this.player.isInvisible ? 0 : 4,
+        shadowBlur: 15
         }
       },
     configCirclesForOther(id){
@@ -122,6 +146,10 @@ export default {
             this.socket.emit("changeDirection", direction.Up);
             this.currentKeyDown[keyCode] = direction.Up;
           }
+          break;
+          //w
+        case 32:
+          this.socket.emit("consumeInvis");
           break;
       }
     },

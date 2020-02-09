@@ -1,7 +1,7 @@
 //where objectA and objectB must have position {x,y} and radius
 
 class ColiderHelper{
-    static IsColiding(playerA, playerB) {
+    static IsTwoCirclesColiding(playerA, playerB) {
         let distSq = (playerA.position.x - playerB.position.x) * 
                      (playerA.position.x - playerB.position.x) + 
                      (playerA.position.y - playerB.position.y) * 
@@ -15,15 +15,15 @@ class ColiderHelper{
             return true; 
         }
     }
-    static IsColidingWithWall(player, wall)
+    static IsColidingWithWall(circle, wall)
     {
-        var distX = Math.abs(player.position.x - wall.x - wall.width / 2);
-        var distY = Math.abs(player.position.y - wall.y - wall.height / 2);
+        var distX = Math.abs(circle.position.x - wall.x - wall.width / 2);
+        var distY = Math.abs(circle.position.y - wall.y - wall.height / 2);
 
-        if (distX > (wall.width / 2 + player.radius)) {
+        if (distX > (wall.width / 2 + circle.radius)) {
             return false;
         }
-        if (distY > (wall.height / 2 + player.radius)) {
+        if (distY > (wall.height / 2 + circle.radius)) {
             return false;
         }
 
@@ -36,7 +36,7 @@ class ColiderHelper{
 
         var dx = distX - wall.width / 2;
         var dy = distY - wall.height / 2;
-        return (dx * dx + dy * dy <= (player.radius * player.radius));
+        return (dx * dx + dy * dy <= (circle.radius * circle.radius));
     }
 }
 

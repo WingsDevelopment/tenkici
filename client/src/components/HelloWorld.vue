@@ -9,7 +9,8 @@
       v-if="player!=null && otherPlayers!=null" 
       v-bind:player="player" 
       v-bind:otherPlayers="otherPlayers"
-      v-bind:walls="walls"/>
+      v-bind:walls="walls"
+      v-bind:invisRunes="invisRunes"/>
   </div>
 </template>
 
@@ -32,7 +33,9 @@ export default {
       player: null,
       otherPlayers: {},
       spawned: false,
-      walls: []
+      walls: [],
+      invisRunes: [],
+      invises: 0
     }
   },
   created() {
@@ -45,13 +48,48 @@ export default {
     });
 
     this.socket.on("serverError", message => {
-      alert("Useravamo se, server error: " + message);
+      alert("Server error: " + message);
     });
     
     this.socket.on("initWalls", walls => {
       // eslint-disable-next-line no-console
       console.log(walls);
       this.walls = walls;
+    });
+
+    this.socket.on("initInvises", invisRunes => {
+      // eslint-disable-next-line no-console
+      console.log(invisRunes);
+      invisRunes.forEach(rune => {
+        this.invisRunes.push(rune);
+      });
+    });
+
+    this.socket.on("invisSpawned", invis => {
+      // eslint-disable-next-line no-console
+      this.invisRunes.push(invis);
+    });
+   
+    this.socket.on("invisConsumed", playerId => {
+      // eslint-disable-next-line no-console
+      if (this.player != null && this.player.id == playerId) this.player.isInvisible = true;
+      if (this.otherPlayers[playerId] != null) this.otherPlayers[playerId].isInvisible = true;
+    });
+    
+    this.socket.on("deleteInvisesFromMap", ids => {
+      // eslint-disable-next-line no-console
+      ids.forEach(invisId => {
+          let index = this.invisRunes.findIndex(x => x.id === invisId);
+          if (index != -1) {
+              this.invisRunes.splice(index, 1);
+          }
+      });
+    });
+    
+    this.socket.on("invisExpired", (data) => {
+      let playerId = this.onPlayerMoved(data);
+      if (this.player.id === playerId) this.player.isInvisible = false;
+      if (this.otherPlayers[playerId] != null) this.otherPlayers[playerId].isInvisible = false;
     })
 
     this.socket.on("initOthers", players => {
@@ -73,12 +111,30 @@ export default {
     });
     
     this.socket.on("playerMoved", data => {
+      this.onPlayerMoved(data);
+    });
+    
+    this.socket.on("playerDied", id => {
+      if (this.player.id === id) {
+        this.player = null;
+        // this.spawned = false;
+        alert('umro si nube, F5');
+      } else {
+        Vue.delete(this.otherPlayers, id);
+      }
+    });
+  },
+  mounted() {
+  },
+  methods: {
+    onPlayerMoved(data) {
       data = new Buffer(data).toString();
+      // eslint-disable-next-line no-console
       var positionX = parseInt(data.substring(0, 4), 10);
       var positionY = parseInt(data.substring(4, 8), 10);
       var id = data.substring(8);
 
-      if (id == this.player.id) {
+      if (this.player != null && id == this.player.id) {
         this.player.position.x = positionX;
         this.player.position.y = positionY;
       } else {
@@ -88,22 +144,9 @@ export default {
           otherPlayer.position.y = positionY;
         }
       }
-    });
-    
-    this.socket.on("playerDied", id => {
-      if (this.player.id === id) {
-        this.player = null;
-        this.spawned = false;
-        // alert('umro si nube');
-      } else {
-        Vue.delete(this.otherPlayers, id);
-      }
 
-    });
-  },
-  mounted() {
-  },
-  methods: {
+      return id;
+    },
     spawnAsVampire() {
       this.socket.emit("createPlayer", 1);
     },
