@@ -4,15 +4,23 @@ const World = require('./World.js');
 
 class Game {
     static Update() {
-        PlayerContainer.ConsumeInvises();
+        try {
+            PlayerContainer.ConsumeInvises();
 
-        Object.keys(PlayerContainer.players).forEach(function(key) {
-            PlayerContainer.players[key].changePosition();
-        });
-        
-        PlayerContainer.checkColisions();
+            Object.keys(PlayerContainer.players).forEach(function(key) {
+                let player = PlayerContainer.players[key];
+                if (player != null) {
+                    PlayerContainer.players[key].changePosition();
+                }
+            });
+            
+            PlayerContainer.checkColisions();
+    
+            World.startSpawningInvises(PlayerContainer);
+        }
+        catch (e) {
 
-        World.startSpawningInvises(PlayerContainer);
+        }
     }
 }
 
