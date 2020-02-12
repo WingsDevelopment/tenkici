@@ -1,0 +1,8 @@
+version: '2.4'
+
+services:
+  webapp:
+    build: server/
+    container_name: vampir_io
+    ports:
+      - "3000:3000"

@@ -1,5 +1,6 @@
-const Express = require('express')();
-const Http = require('http').Server(Express);
+var express = require('express');
+var app = express();
+const Http = require('http').Server(app);
 const Socketio = require('socket.io')(Http);
 const PlayerContainer = require('./playerFiles/PlayerContainer.js');
 const PlayerType = require('./playerFiles/PlayerType.js');
@@ -7,6 +8,7 @@ const domainEvents = require('./helpers/DomainEvents.js');
 const MapContainer = require('./gameFiles/MapContainer.js');
 const World = require('./gameFiles/World.js');
 const Game = require('./gameFiles/Game.js');
+const path = require('path');
 
 MapContainer.LoadMap(1);
 const hrtimeMs = function() {
@@ -104,6 +106,15 @@ Socketio.on("connection", socket => {
         console.log('a?0');
         // Socketio.emit("serverError", e.message);
     }
+});
+
+// app.use("/static", express.static('./static/'));
+// app.use(express.static(__dirname + '\\public'));
+// console.log(path.join(__dirname, '', 'public'));
+app.use('/public', express.static(path.join(__dirname, '', 'public')));
+
+app.get('/', (req, res) => {
+    res.sendFile('index.html', { root: './public' });
 });
 
 Http.listen('3000', () => {

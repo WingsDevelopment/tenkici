@@ -39,7 +39,7 @@ export default {
     }
   },
   created() {
-    this.socket = io("http://192.168.0.17:3000");
+    this.socket = io("http://192.168.1.109:3000");
     this.socket.binaryType = 'blob';
 
     this.socket.on("join", player => {
